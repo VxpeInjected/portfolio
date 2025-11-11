@@ -1,9 +1,9 @@
 // music.js
 
 // Create an audio element
-const bgMusic = new Audio("https://example.com/your-music.mp3"); // Replace with your MP3 URL
-bgMusic.loop = true;      // Loop the music
-bgMusic.volume = 0.3;     // Adjust volume (0.0 - 1.0)
+const bgMusic = new Audio("websitemusic.mp3"); // just the file name
+bgMusic.loop = true;
+bgMusic.volume = 0.3;
 
 // Play music after user interacts (required on most browsers)
 function startMusic() {

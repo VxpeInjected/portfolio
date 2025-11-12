@@ -1,280 +1,532 @@
 <!doctype html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>VxpeInjected — Discord Bot Developer</title>
-  <meta name="description" content="VxpeInjected — professional Discord bot developer. Fast, affordable bots with gorgeous UIs and tight code." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: radial-gradient(circle at 20% 20%, #0a0f24 0%, #000 100%);
-      --accent: #00b7ff;
-      --accent-glow: 0 0 12px rgba(0,183,255,0.6);
-      --text: #e6f2ff;
-    }
-    * { box-sizing:border-box; }
-    body,html {
-      margin:0;
-      height:100%;
-      font-family:'Inter',sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      overflow-x:hidden;
-    }
-    header {
-      display:flex;align-items:center;justify-content:space-between;
-      padding:20px 50px;
-    }
-    .logo {
-      display:flex;align-items:center;gap:12px;
-    }
-    .logo img {
-      width:48px;height:48px;border-radius:50%;border:2px solid var(--accent);
-      box-shadow:var(--accent-glow);
-    }
-    nav a {
-      margin:0 14px;
-      text-decoration:none;
-      color:var(--text);
-      font-weight:600;
-      transition:0.25s;
-    }
-    nav a:hover { color:var(--accent); text-shadow:var(--accent-glow); }
-    .hero {
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      height:80vh;text-align:center;gap:16px;
-    }
-    h1 {
-      font-size:3em;
-      font-weight:800;
-      color:var(--accent);
-      text-shadow:var(--accent-glow);
-      margin:0;
-    }
-    .buttons {
-      display:flex;gap:18px;margin-top:24px;
-    }
-    button,a.button {
-      background:rgba(0,183,255,0.1);
-      border:1px solid var(--accent);
-      color:var(--accent);
-      padding:10px 22px;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:600;
-      font-size:1em;
-      text-decoration:none;
-      transition:all 0.25s;
-    }
-    button:hover,a.button:hover {
-      background:var(--accent);
-      color:#000;
-      box-shadow:var(--accent-glow);
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>VxpeInjected — Discord Bot Developer</title>
+<meta name="description" content="VxpeInjected — professional Discord bot developer. Fast, affordable bots with gorgeous UIs and tight code." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="shortcut icon" type="image/x-icon" href="favicon2.png">
+<script src="music.js"></script>
+<style>
+:root{
+--bg:#061021;
+--accent:#1e90ff; /* blue theme */
+--muted:rgba(255,255,255,0.06);
+--glass:rgba(255,255,255,0.03);
+--glass-2:rgba(255,255,255,0.02);
+--card-shadow: 0 10px 30px rgba(30,144,255,0.08), inset 0 1px 0 rgba(255,255,255,0.02);
+color-scheme: dark;
+font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+*{box-sizing:border-box}
+/* prevent horizontal scrollbar */
+html,body{height:100%;margin:0;background:var(--bg);overflow-x:hidden}
 
-    /* popup styling */
-    .popup {
-      position:fixed;inset:0;
-      background:rgba(0,0,0,0.8);
-      backdrop-filter:blur(16px);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:20;
-      transition:opacity 0.3s ease;
-    }
-    .popup.active { display:flex; animation:fadeIn 0.3s forwards; }
-    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
-    .popup-content {
-      background:rgba(15,20,35,0.95);
-      border:1px solid rgba(0,183,255,0.3);
-      border-radius:14px;
-      box-shadow:var(--accent-glow);
-      padding:30px 40px;
-      text-align:center;
-      position:relative;
-      max-width:90%;
-      animation:popIn 0.35s ease;
-    }
-    @keyframes popIn { from{transform:scale(0.8);opacity:0;} to{transform:scale(1);opacity:1;} }
+/* canvas background full-bleed */
+#bgCanvas{position:fixed;inset:0;z-index:0;display:block}
 
-    .close-btn {
-      position:absolute;top:10px;right:14px;
-      background:none;
-      border:none;
-      color:var(--accent);
-      font-size:1.8em;
-      cursor:pointer;
-      transition:transform 0.2s, text-shadow 0.2s;
-    }
-    .close-btn:hover { text-shadow:var(--accent-glow); transform:scale(1.15); }
-    .close-btn:active { transform:scale(0.9); opacity:0.7; }
+.page{
+position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:48px 24px;
+}
+.shell{width:1100px;max-width:100%;backdrop-filter: blur(8px);padding:36px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));box-shadow:var(--card-shadow);border:1px solid rgba(255,255,255,0.03)}
 
-    /* services layout */
-    .services-grid {
-      display:flex;
-      gap:18px;
-      justify-content:center;
-      flex-wrap:nowrap;
-      margin-top:30px;
-      max-width:90vw;
-    }
-    .service-card {
-      flex:1;
-      min-width:240px;
-      max-width:260px;
-      min-height:260px;
-      padding:20px;
-      border-radius:12px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
-      border:1px solid rgba(255,255,255,0.04);
-      display:flex;flex-direction:column;justify-content:flex-start;
-      text-align:left;
-      transition:transform 0.25s, box-shadow 0.25s;
-    }
-    .service-card:hover { transform:translateY(-6px); box-shadow:var(--accent-glow); }
-    .service-card h3 { color:var(--accent); margin-top:0; }
-    .service-card p { font-size:0.9em;margin:0 0 8px; }
-    .service-card ul { margin:0;padding-left:18px; }
-    .service-card li {
-      font-size:0.85em;
-      margin-bottom:4px;
-      padding-left:4px;
-    }
+header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.logo{display:flex;gap:14px;align-items:center}
+/* replaced mark with image but keep dimensions & rounded corners */
+.logo .mark-img{width:56px;height:56px;border-radius:12px;object-fit:cover;display:block;box-shadow:0 6px 24px rgba(30,144,255,0.12);border:1px solid rgba(255,255,255,0.03); transition: transform .36s ease, box-shadow .36s ease;}
+.brand{line-height:1}
+.brand h1{font-size:18px;margin:0; transition: color .36s ease, transform .36s ease, text-shadow .36s ease;}
+.brand p{margin:0;font-size:12px;color:rgba(255,255,255,0.65)}
 
-    /* clients layout */
-    .clients-grid {
-      display:flex;justify-content:center;gap:20px;flex-wrap:nowrap;margin-top:30px;
-    }
-    .client-card {
-      width:260px;min-height:240px;
-      padding:18px;border-radius:12px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
-      border:1px solid rgba(255,255,255,0.04);
-      display:flex;flex-direction:column;align-items:center;text-align:center;
-      transition:transform 0.25s, box-shadow 0.25s;
-    }
-    .client-card:hover { transform:translateY(-6px); box-shadow:var(--accent-glow); }
-    .client-card img { width:48px;height:48px;border-radius:8px;margin-bottom:10px; }
-    .client-card .name { font-weight:700;font-size:1.1em;text-align:center; }
+nav{display:flex;gap:10px;align-items:center}
+.btn{font-weight:600;padding:10px 14px;border-radius:10px;border:1px solid transparent;background:linear-gradient(90deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));cursor:pointer;transition:all .28s;backdrop-filter: blur(6px)}
+.btn:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.4)}
+.cta{background:linear-gradient(90deg,var(--accent),#6fb8ff);color:white;border:none;padding:10px 16px;text-decoration:none; /* ensure no underline */}
 
-  </style>
+main{display:grid;grid-template-columns:1fr 420px;gap:26px}
+
+.hero{
+padding:20px 18px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)
+}
+.eyebrow{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,rgba(255,255,255,0.02),var(--muted));font-size:12px;margin-bottom:12px}
+h2{margin:0 0 10px 0;font-size:28px}
+p.lead{margin:0 0 18px 0;color:rgba(255,255,255,0.8);line-height:1.5}
+
+/* services area in main kept as original-ish but modal will show full service cards */
+.features{display:flex;gap:12px;margin-top:16px}
+.feature{flex:1;padding:12px;border-radius:12px;background:linear-gradient(180deg,var(--glass),var(--glass-2));border:1px solid rgba(255,255,255,0.02);transition:transform .28s, box-shadow .28s}
+.feature:hover{transform:translateY(-8px);box-shadow:0 18px 40px rgba(30,144,255,0.06);}
+.feature h3{margin:0 0 6px 0;font-size:15px}
+.feature p{margin:0;font-size:13px;color:rgba(255,255,255,0.7)}
+
+/* client cards in main */
+.clients{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.client{padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.03);text-align:center;transition:transform .32s;position:relative}
+.client:hover{transform:translateY(-8px) rotate(-1deg);box-shadow:0 18px 50px rgba(30,144,255,0.06)}
+.client .name{font-weight:700;text-align: center}
+.client .role{font-size:13px;color:rgba(255,255,255,0.65)}
+.client .client-icon{position:absolute;top:12px;left:12px;width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#8cc7ff);display:flex;align-items:center;justify-content:center;color:white;font-weight:800;box-shadow:0 8px 30px rgba(30,144,255,0.12)}
+
+/* right column */
+.panel{padding:18px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);min-height:320px}
+.price{font-size:22px;font-weight:800;margin:0}
+.price small{display:block;font-weight:400;font-size:12px;color:rgba(255,255,255,0.7)}
+.list{margin-top:14px}
+.list li{margin:8px 0;color:rgba(255,255,255,0.8)}
+
+.contact{display:flex;gap:10px;margin-top:18px}
+.contact a{flex:1;text-align:center;padding:12px;border-radius:12px;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,0.03); transition: transform .28s ease, box-shadow .28s ease;}
+.s-btn{background:linear-gradient(90deg,var(--accent),#6fb8ff);color:white}
+.ghost{background:transparent;color:rgba(255,255,255,0.9)}
+
+footer{display:flex;justify-content:space-between;align-items:center;margin-top:18px;color:rgba(255,255,255,0.55);font-size:13px}
+
+/* small screens */
+@media (max-width:880px){main{grid-template-columns:1fr} .clients{grid-template-columns:repeat(2,1fr)} .logo .mark{width:48px;height:48px}}
+@media (max-width:520px){.clients{grid-template-columns:1fr} .contact{flex-direction:column} .brand h1{font-size:16px}}
+
+/* micro-animations */
+.glow{position:relative}
+.glow:after{content:'';position:absolute;inset:-2px;border-radius:inherit;filter:blur(20px);opacity:0.55;pointer-events:none;background:linear-gradient(90deg,var(--accent),#8cc7ff);mix-blend-mode:screen;transition:opacity .3s}
+.glow:hover:after
+
+/* link-ish card hover shimmer */
+.shiny{position:relative;overflow:hidden}
+.shiny:before{content:'';position:absolute;left:-120%;top:0;width:40%;height:100%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);transition:all .9s}
+.shiny:hover:before{left:120%}
+
+/* ---- MODAL / OVERLAY (minimal, matching style + in-frame) ---- */
+.overlay {
+display: none;
+position: fixed;
+inset: 0;
+z-index: 100;
+/* increased opacity on popup backdrop */
+background: rgba(0,0,0,0.75);
+backdrop-filter: blur(8px);
+align-items: center;
+justify-content: center;
+padding: 30px;
+}
+.overlay.active { display: flex; }
+
+.modal {
+width: min(920px, 96%);
+max-height: 86vh;
+overflow: auto;
+/* slightly more opaque modal panel so content reads clearer */
+background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+border: 1px solid rgba(255,255,255,0.04);
+box-shadow: var(--card-shadow);
+border-radius: 14px;
+padding: 20px;
+transform: translateY(20px);
+opacity: 0;
+transition: transform .35s ease, opacity .35s ease;
+}
+.overlay.active .modal { transform: translateY(0); opacity: 1; }
+
+.modal header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.modal header h2 { margin:0; color:var(--accent); }
+.modal .close { background:transparent; border:1px solid rgba(255,255,255,0.04); padding:8px 10px; border-radius:8px; color: #fff; cursor:pointer; }
+
+/* services modal layout (WIDER & TALLER cards - adjusted to avoid horizontal overflow; now wrap) */
+.services-grid {
+display:flex;
+gap:16px;
+align-items:stretch;
+justify-content:center;
+flex-wrap:wrap;      /* allow wrapping so no horizontal slider */
+padding-bottom:12px;
+max-width:100%;
+}
+.service-card {
+min-width: 220px;    /* slightly smaller to fit */
+max-width: 240px;
+min-height: 240px;   /* reduced height to fit */
+padding: 18px;       /* slightly reduced padding */
+border-radius:12px;
+background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+border:1px solid rgba(255,255,255,0.03);
+display:flex; flex-direction:column; gap:10px; justify-content:flex-start;
+transition: transform .32s ease, box-shadow .32s ease, background .32s ease;
+flex: 0 1 auto;
+}
+.service-card h3{margin:0;font-size:16px;color:var(--accent)}
+.service-card p{margin:0;color:rgba(255,255,255,0.8);font-size:13px}
+.service-card ul{margin:8px 0 0 18px;color:rgba(255,255,255,0.8);font-size:13px}
+
+/* increase glamour progressively (only 4 now) */
+.service-card:nth-child(1){box-shadow:0 10px 26px rgba(30,144,255,0.04)}
+.service-card:nth-child(2){box-shadow:0 12px 32px rgba(30,144,255,0.06)}
+.service-card:nth-child(3){box-shadow:0 16px 40px rgba(30,144,255,0.08)}
+.service-card:nth-child(4){box-shadow:0 20px 52px rgba(30,144,255,0.10)}
+
+/* clients modal layout */
+.clients-grid {
+display:flex;
+gap:14px;
+align-items:stretch;
+padding-bottom:8px;
+flex-wrap:wrap;      /* allow wrapping to remove slider */
+justify-content:center;
+max-width:100%;
+}
+.client-card {
+flex: 0 1 220px; /* shrinkable so it fits without scrollbar */
+padding:14px;    /* slightly smaller */
+border-radius:12px;
+background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+border:1px solid rgba(255,255,255,0.03);
+position:relative;
+display:flex; flex-direction:column; justify-content:space-between;
+transition: transform .32s ease, box-shadow .32s ease, background .32s ease;
+min-height:180px;
+}
+.client-card .icon { position:absolute; top:12px; left:12px; width:36px; height:36px; border-radius:8px; background:linear-gradient(135deg,var(--accent),#8cc7ff); display:flex; align-items:center; justify-content:center; color:white; font-weight:800; box-shadow:0 10px 30px rgba(30,144,255,0.12); }
+.client-card h3{margin:28px 0 6px 0;font-size:16px}
+.client-card p{margin:0;color:rgba(255,255,255,0.8);font-size:13px}
+.client-card .footer{margin-top:12px;font-size:12px;color:rgba(255,255,255,0.65);text-align:right}
+
+.client {
+display: flex;
+flex-direction: column;
+justify-content: center; /* vertical centering */
+align-items: center;     /* horizontal centering */
+}
+
+/* --- Hover animations requested (logo/name, contact buttons, service/client cards) --- */
+.logo .mark-img:hover {
+transform: scale(1.12) rotate(3deg);
+box-shadow: 0 0 28px var(--accent), 0 0 56px rgba(30,144,255,0.28);
+}
+.brand h1:hover {
+color: var(--accent);
+text-shadow: 0 0 14px var(--accent), 0 0 28px rgba(30,144,255,0.45);
+transform: scale(1.045);
+}
+
+/* contact buttons */
+.contact a:hover {
+transform: translateY(-6px) scale(1.03);
+box-shadow: 0 8px 30px rgba(30,144,255,0.18);
+}
+
+/* services and clients cards hover */
+.service-card:hover, .client-card:hover {
+transform: translateY(-10px) scale(1.03);
+box-shadow: 0 0 30px rgba(30,144,255,0.24), 0 20px 60px rgba(30,144,255,0.08);
+background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+} </style>
+
 </head>
 <body>
-
+<canvas id="bgCanvas"></canvas>
+<div class="page">
+<div class="shell">
 <header>
-  <div class="logo">
-    <img src="https://cdn.discordapp.com/avatars/1253736765986967622/be0bf7e852b8f85f89e1eeb02426d60a.png?size=1024" alt="VxpeInjected Logo">
-    <span>VxpeInjected</span>
-  </div>
-  <nav>
-    <a href="#" id="servicesBtn">Services</a>
-    <a href="#" id="clientsBtn">Clients</a>
-    <a href="mailto:vxpeinjected@example.com">Email Me</a>
-    <a href="https://discord.gg" target="_blank">Discord</a>
-  </nav>
+<div class="logo">
+<!-- avatar image replacing VI but preserving rounded rectangle & glow -->
+<img class="mark-img" src="https://cdn.discordapp.com/avatars/1253736765986967622/be0bf7e852b8f85f89e1eeb02426d60a.png?size=1024" alt="VxpeInjected">
+<div class="brand">
+<h1>VxpeInjected</h1>
+<p>Discord Bot Developer • Professional • Affordable</p>
+</div>
+</div>
+<nav>
+<button class="btn" id="openServices">Services</button>
+<button class="btn" id="openClients">Clients</button>
+<a class="btn cta" href="https://discord.gg/52Mf6dn69f">Hire me</a>
+</nav>
 </header>
 
+<main>
 <section class="hero">
-  <h1>Professional Discord Bot Developer</h1>
-  <p>Fast. Reliable. Affordable.</p>
-  <div class="buttons">
-    <a href="mailto:vxpeinjected@example.com" class="button">Hire Me</a>
-  </div>
-</section>
+<span class="eyebrow">Fast. Clean. Maintainable.</span>
+<h2>Custom Discord Bots & Automation
+<span style="display:block;font-size:14px;font-weight:600;color:var(--accent);margin-top:6px">Long Term Hosting • Slash commands • Moderation • Economy • Webhooks</span>
+</h2>
+<p class="lead">I'm VxpeInjected — a professional programmer who builds feature-rich Discord bots for communities, streamers, and servers. I specialize in fast delivery, clean code, and friendly prices.</p>
 
-<!-- Services Popup -->
-<div id="servicesPopup" class="popup">
-  <div class="popup-content">
-    <button class="close-btn" onclick="closePopup('servicesPopup')">×</button>
-    <h2>Services</h2>
-    <div class="services-grid">
-      <div class="service-card">
-        <h3>Basic</h3>
-        <p>For simple bots that get things done.</p>
-        <ul>
-          <li>1–2 Commands</li>
-          <li>Fast Delivery</li>
-          <li>Simple Features</li>
-          <li>Low Cost</li>
-        </ul>
-      </div>
-      <div class="service-card">
-        <h3>Standard</h3>
-        <p>More commands, more personality.</p>
-        <ul>
-          <li>Up to 5 Commands</li>
-          <li>Command Customization</li>
-          <li>Error Handling</li>
-          <li>Basic Logging</li>
-        </ul>
-      </div>
-      <div class="service-card">
-        <h3>Advanced</h3>
-        <p>Built for bigger communities.</p>
-        <ul>
-          <li>10+ Commands</li>
-          <li>Custom Systems</li>
-          <li>Event Integration</li>
-          <li>Priority Support</li>
-        </ul>
-      </div>
-      <div class="service-card">
-        <h3>Elite</h3>
-        <p>Top-tier performance and polish.</p>
-        <ul>
-          <li>Unlimited Commands</li>
-          <li>Unique Systems</li>
-          <li>Full Optimization</li>
-          <li>Lifetime Support</li>
-        </ul>
-      </div>
-    </div>
-  </div>
+<div class="features">
+<div class="feature shiny">
+<h3>Slash-command-first</h3>
+<p>Intuitive commands, autocomplete, and context-aware responses.</p>
+</div>
+<div class="feature shiny">
+<h3>Secure & Reliable</h3>
+<p>Role-aware permissions, audits, and safe rate limit handling.</p>
+</div>
+<div class="feature shiny">
+<h3>Bot Hosting</h3>
+<p>24/7 hosting with low downtime.</p>
+</div>
 </div>
 
-<!-- Clients Popup -->
-<div id="clientsPopup" class="popup">
-  <div class="popup-content">
-    <button class="close-btn" onclick="closePopup('clientsPopup')">×</button>
-    <h2>Largest Clients</h2>
-    <div class="clients-grid">
-      <div class="client-card">
-        <img src="https://via.placeholder.com/48" alt="Client Icon">
-        <div class="name">Client Alpha</div>
-        <p>Community-focused bot with automation tools.</p>
-      </div>
-      <div class="client-card">
-        <img src="https://via.placeholder.com/48" alt="Client Icon">
-        <div class="name">Client Beta</div>
-        <p>Moderation and engagement systems for 10k+ users.</p>
-      </div>
-      <div class="client-card">
-        <img src="https://via.placeholder.com/48" alt="Client Icon">
-        <div class="name">Client Gamma</div>
-        <p>All-in-one bot for a growing server network.</p>
-      </div>
-    </div>
-  </div>
+<div class="clients">
+<div class="client">
+<div class="name">Client Alpha</div>
+<div class="role">Large Tech Stores • 2k+ members</div>
+</div>
+<div class="client">
+<div class="name">Moderation</div>
+<div class="role">Streamer support • Moderation suite</div>
+</div>
+<div class="client">
+<div class="name">Fun Commands</div>
+<div class="role">Economy & mini-games • Active retention</div>
+</div>
+</div>
+</section>
+
+<aside class="panel">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+<div>
+<p class="price">Affordable - <span style="color:var(--accent)">$5+</span></p>
+<small>Custom quotes — I keep pricing friendly for creators.</small>
+</div>
+<div style="text-align:right">
+<div style="font-size:12px;color:rgba(255,255,255,0.6)">Turnaround</div>
+<div style="font-weight:700">3–60 days</div>
+</div>
+</div>
+
+<ul class="list">
+<li>Full source & setup instructions</li>
+<li>Unit-tested command handlers</li>
+<li>Optional hosting (payed)</li>
+<li>Clean documentation & handover</li>
+</ul>
+
+<div class="contact" id="contact">
+<!-- restored as buttons and styled like original -->
+<a class="s-btn" href="mailto:businessemail.rv@gmail.com?subject=Bot%20Inquiry%20from%20Website">Email me</a>
+<a class="ghost" href="https://discord.gg/52Mf6dn69f" target="_blank" rel="noopener">Discord</a>
+</div>
+
+<div style="margin-top:16px;font-size:13px;color:rgba(255,255,255,0.65)">I'm online every day - catch me on Discord <strong>@vxpe_injected</strong>.</div>
+</aside>
+</main>
+
+<footer>
+<div>Made by <strong>VxpeInjected</strong> — Discord Bot Developer</div>
+<div>Three biggest clients secured • Affordable pricing</div>
+</footer>
+</div>
+</div>
+
+<!-- Services Modal (centered, in-frame, fade+slide) -->
+
+<div class="overlay" id="servicesOverlay" aria-hidden="true">
+<div class="modal" role="dialog" aria-modal="true" aria-labelledby="servicesTitle">
+<header>
+<h2 id="servicesTitle">Services</h2>
+<button class="close" id="closeServices">Close</button>
+</header>
+
+<div class="services-grid" role="list">
+<!-- 4 horizontally spread cards, progressively more glamorous -->
+<div class="service-card" role="listitem">
+<h3>Basic</h3>
+<p>Starter bot for essential needs.</p>
+<ul><li>Core slash commands</li><li>Basic moderation</li><li>Lightweight & fast</li><li>Easy setup</li></ul>
+          <p></p>
+<p>Prices ranging from 2.50-5$.</p>
+</div>
+<div class="service-card" role="listitem">
+<h3>Pro</h3>
+<p>More advanced server tools.</p>
+<ul><li>Enhanced moderation</li><li>Heavily custom slash commands</li><li>Auto-moderation & logs</li><li>Extended Systems</li></ul>
+          <p></p>
+<p>Prices ranging from 5-10$.</p>
+</div>
+<div class="service-card" role="listitem">
+<h3>Elite</h3>
+<p>Full-featured professional bot.</p>
+<ul><li>Advanced moderation & permissions</li><li>Interactive commands & games</li><li>Webhook & integration support</li><li>Optional hosting support</li></ul>
+          <p></p>
+<p>Prices ranging from 10-25$.</p>
+</div>
+<div class="service-card" role="listitem">
+<h3>Ultimate</h3>
+<p>Top-tier all-in-one bot.</p>
+<ul><li>Everything in Elite</li><li>Priority support & updates</li><li>Custom automation & integrations</li><li>Optional bot documentation</li></ul>
+          <p></p>
+<p>Prices ranging from 25-250$.</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Clients Modal (3 glamorous cards w/ icon + footer) -->
+
+<div class="overlay" id="clientsOverlay" aria-hidden="true">
+<div class="modal" role="dialog" aria-modal="true" aria-labelledby="clientsTitle">
+<header>
+<h2 id="clientsTitle">Largest Clients</h2>
+<button class="close" id="closeClients">Close</button>
+</header>
+
+<div class="clients-grid">
+<div class="client-card">
+<div class="mark">
+<img src="https://images-ext-1.discordapp.net/external/ufBEkFNpTPw7xBQNAWLGHh5Ug6Djc81_zZ-5ENynITI/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/1393988950653407384/93077809cbbc308263fd60cd2ddde51d.png?format=png&quality=lossless" alt="Client Icon" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
+</div>
+<h3>Coldd</h3>
+<p>Marketplace bot with several features for posting, designed to engage the community with ways for users to sell their creations, hire someone or be hired.</p>
+<div class="footer"><strong>Completed</strong></div>
+</div>
+
+<div class="client-card">
+<div class="mark">
+<img src="https://media.discordapp.net/attachments/1437875046193565831/1437875046940020776/asahimain_logo.png?ex=6914d4fd&is=6913837d&hm=acf3e554ea2db8ec6c8e0052d6b9959d59c23b58d2ef929152a64143b94674aa&=&format=png&quality=lossless" alt="Client Icon" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
+</div>
+<h3>Asahi Tech</h3>
+<p>Multipurpose bot for staff and users, containing things such as moderation, utilites and user retention tracking.</p>
+<div class="footer"><strong>In Progress</strong></div>
+</div>
+
+<div class="client-card">
+<div class="mark">
+<img src="https://media.discordapp.net/attachments/1437874097357983804/1437874097496264878/lostarchives_logo.png?ex=6914d41b&is=6913829b&hm=e0a08754099470a893cd553363b6f61d41a630b866d46bceed625fdea8f23e13&=&format=png&quality=lossless" alt="Client Icon" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
+</div>
+<h3>Lost Archives</h3>
+<p>User retention and moderation bot, made mainly for the community but also with some aspects in mind to make managing the server easier for staff.</p>
+<div class="footer"><strong>In Progress</strong></div>
+</div>
+</div>
+</div>
 </div>
 
 <script>
-  const servicesBtn=document.getElementById('servicesBtn');
-  const clientsBtn=document.getElementById('clientsBtn');
-  const servicesPopup=document.getElementById('servicesPopup');
-  const clientsPopup=document.getElementById('clientsPopup');
+/* Animated glowing particle background - original unchanged logic */
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let w = canvas.width = innerWidth;
+let h = canvas.height = innerHeight;
+const ACCENT = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#1e90ff';
 
-  servicesBtn.addEventListener('click',()=>{servicesPopup.classList.add('active');});
-  clientsBtn.addEventListener('click',()=>{clientsPopup.classList.add('active');});
+const PR = devicePixelRatio || 1;
+canvas.width = innerWidth * PR; canvas.height = innerHeight * PR; canvas.style.width = innerWidth + 'px'; canvas.style.height = innerHeight + 'px'; ctx.scale(PR,PR);
 
-  function closePopup(id){
-    const popup=document.getElementById(id);
-    popup.style.opacity='0';
-    setTimeout(()=>{popup.classList.remove('active'); popup.style.opacity='';},250);
-  }
+window.addEventListener('resize',()=>{
+canvas.width = innerWidth * PR; canvas.height = innerHeight * PR; canvas.style.width = innerWidth + 'px'; canvas.style.height = innerHeight + 'px'; ctx.scale(PR,PR);
+w = innerWidth; h = innerHeight;
+});
+
+function rand(min,max){return Math.random()*(max-min)+min}
+
+// create glowing orbs
+const orbs = [];
+const ORB_COUNT = Math.max(8, Math.floor((innerWidth*innerHeight)/90000));
+for(let i=0;i<ORB_COUNT;i++){
+orbs.push({
+x:rand(0,w), y:rand(0,h), r:rand(30,140), vx:rand(-0.2,0.2), vy:rand(-0.2,0.2), hue:rand(200,220), alpha:rand(0.08,0.22)
+})
+}
+
+// small particles
+const sparks = [];
+for(let i=0;i<Math.max(30, ORB_COUNT*6); i++){
+sparks.push({x:rand(0,w), y:rand(0,h), s:rand(0.6,2), vx:rand(-0.6,0.6), vy:rand(-0.6,0.6), alpha:rand(0.04,0.18)});
+}
+
+function draw(){
+ctx.clearRect(0,0,w,h);
+
+// subtle gradient wash
+const g = ctx.createLinearGradient(0,0,w,h);
+g.addColorStop(0,'rgba(6,16,33,0.7)');
+g.addColorStop(1,'rgba(3,6,12,0.85)');
+ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+
+// orbs
+for(const o of orbs){
+o.x += o.vx; o.y += o.vy;
+if(o.x < -200) o.x = w + 200; if(o.x > w + 200) o.x = -200;
+if(o.y < -200) o.y = h + 200; if(o.y > h + 200) o.y = -200;
+
+const g2 = ctx.createRadialGradient(o.x,o.y,o.r*0.02,o.x,o.y,o.r);
+g2.addColorStop(0, `hsla(${o.hue},95%,65%,${o.alpha})`);
+g2.addColorStop(0.25, `hsla(${o.hue+20},90%,60%,${o.alpha*0.7})`);
+g2.addColorStop(1, 'rgba(3,6,12,0)');
+ctx.beginPath(); ctx.fillStyle = g2; ctx.arc(o.x,o.y,o.r,0,Math.PI*2); ctx.fill();
+}
+
+// sparks
+for(const s of sparks){
+s.x += s.vx; s.y += s.vy;
+s.x += Math.sin(Date.now()/600 + s.x*0.001)*0.1;
+s.y += Math.cos(Date.now()/500 + s.y*0.001)*0.1;
+if(s.x < 0) s.x = w; if(s.x > w) s.x = 0; if(s.y < 0) s.y = h; if(s.y > h) s.y = 0;
+ctx.beginPath(); ctx.fillStyle = `rgba(160,200,255,${s.alpha})`; ctx.arc(s.x,s.y,s.s,0,Math.PI*2); ctx.fill();
+}
+
+requestAnimationFrame(draw);
+}
+draw();
+
+// tiny UI sparkle on hover
+document.querySelectorAll('.shiny').forEach(el=>{
+el.addEventListener('mousemove', e=>{
+const rect = el.getBoundingClientRect();
+const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+el.style.setProperty('--mx', x+'px'); el.style.setProperty('--my', y+'px');
+})
+});
+
+// subtle theme pulse
+setInterval(()=>{
+const a = 0.9 + Math.random()*0.2;
+document.documentElement.style.setProperty('--accent', ACCENT);
+},3500);
+
+/* ---------- modal logic (minimal & in-frame) ---------- */
+const openServices = document.getElementById('openServices');
+const openClients  = document.getElementById('openClients');
+const servicesOverlay = document.getElementById('servicesOverlay');
+const clientsOverlay  = document.getElementById('clientsOverlay');
+const closeServices = document.getElementById('closeServices');
+const closeClients  = document.getElementById('closeClients');
+
+openServices.addEventListener('click', ()=> {
+servicesOverlay.classList.add('active');
+servicesOverlay.setAttribute('aria-hidden','false');
+});
+openClients.addEventListener('click', ()=> {
+clientsOverlay.classList.add('active');
+clientsOverlay.setAttribute('aria-hidden','false');
+});
+closeServices.addEventListener('click', ()=> {
+servicesOverlay.classList.remove('active');
+servicesOverlay.setAttribute('aria-hidden','true');
+});
+closeClients.addEventListener('click', ()=> {
+clientsOverlay.classList.remove('active');
+clientsOverlay.setAttribute('aria-hidden','true');
+});
+
+// click outside to close
+[servicesOverlay, clientsOverlay].forEach(overlay=>{
+overlay.addEventListener('click', (e)=>{
+if (e.target === overlay) {
+overlay.classList.remove('active');
+overlay.setAttribute('aria-hidden','true');
+}
+});
+});
+
+// keep focus / accessibility light: ESC closes modals
+document.addEventListener('keydown', (e)=>{
+if (e.key === 'Escape') {
+[servicesOverlay, clientsOverlay].forEach(o => o.classList.remove('active'));
+}
+});
 </script>
+
 </body>
 </html>

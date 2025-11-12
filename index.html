@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -22,7 +23,8 @@ color-scheme: dark;
 font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;background:var(--bg);}
+/* prevent horizontal scrollbar */
+html,body{height:100%;margin:0;background:var(--bg);overflow-x:hidden}
 
 /* canvas background full-bleed */
 #bgCanvas{position:fixed;inset:0;z-index:0;display:block}
@@ -90,7 +92,7 @@ footer{display:flex;justify-content:space-between;align-items:center;margin-top:
 /* micro-animations */
 .glow{position:relative}
 .glow:after{content:'';position:absolute;inset:-2px;border-radius:inherit;filter:blur(20px);opacity:0.55;pointer-events:none;background:linear-gradient(90deg,var(--accent),#8cc7ff);mix-blend-mode:screen;transition:opacity .3s}
-.glow:hover:after{opacity:1}
+.glow:hover:after
 
 /* link-ish card hover shimmer */
 .shiny{position:relative;overflow:hidden}
@@ -103,8 +105,9 @@ display: none;
 position: fixed;
 inset: 0;
 z-index: 100;
-background: rgba(0,0,0,0.6);
-backdrop-filter: blur(6px);
+/* increased opacity on popup backdrop */
+background: rgba(0,0,0,0.75);
+backdrop-filter: blur(8px);
 align-items: center;
 justify-content: center;
 padding: 30px;
@@ -115,8 +118,9 @@ padding: 30px;
 width: min(920px, 96%);
 max-height: 86vh;
 overflow: auto;
-background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-border: 1px solid rgba(255,255,255,0.03);
+/* slightly more opaque modal panel so content reads clearer */
+background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+border: 1px solid rgba(255,255,255,0.04);
 box-shadow: var(--card-shadow);
 border-radius: 14px;
 padding: 20px;
@@ -130,48 +134,58 @@ transition: transform .35s ease, opacity .35s ease;
 .modal header h2 { margin:0; color:var(--accent); }
 .modal .close { background:transparent; border:1px solid rgba(255,255,255,0.04); padding:8px 10px; border-radius:8px; color: #fff; cursor:pointer; }
 
-/* services modal layout (WIDER & TALLER cards - adjusted) */
+/* services modal layout (WIDER & TALLER cards - adjusted to avoid horizontal overflow; now wrap) */
 .services-grid {
-  display:flex;
-  gap:18px;
-  align-items:stretch;
-  justify-content:center;
-  flex-wrap:nowrap;
-  padding-bottom:12px;
-  overflow-x:auto;
-  -webkit-overflow-scrolling: touch;
+display:flex;
+gap:16px;
+align-items:stretch;
+justify-content:center;
+flex-wrap:wrap;      /* allow wrapping so no horizontal slider */
+padding-bottom:12px;
+max-width:100%;
 }
 .service-card {
-  min-width: 260px;    /* wider */
-  min-height: 300px;   /* taller */
-  padding: 24px;       /* more breathing room */
-  border-radius:12px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));
-  border:1px solid rgba(255,255,255,0.03);
-  display:flex; flex-direction:column; gap:10px; justify-content:flex-start;
-  transition: transform .32s ease, box-shadow .32s ease, background .32s ease;
+min-width: 220px;    /* slightly smaller to fit */
+max-width: 240px;
+min-height: 240px;   /* reduced height to fit */
+padding: 18px;       /* slightly reduced padding */
+border-radius:12px;
+background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+border:1px solid rgba(255,255,255,0.03);
+display:flex; flex-direction:column; gap:10px; justify-content:flex-start;
+transition: transform .32s ease, box-shadow .32s ease, background .32s ease;
+flex: 0 1 auto;
 }
 .service-card h3{margin:0;font-size:16px;color:var(--accent)}
 .service-card p{margin:0;color:rgba(255,255,255,0.8);font-size:13px}
 .service-card ul{margin:8px 0 0 18px;color:rgba(255,255,255,0.8);font-size:13px}
 
 /* increase glamour progressively (only 4 now) */
-.service-card:nth-child(1){box-shadow:0 12px 30px rgba(30,144,255,0.04)}
-.service-card:nth-child(2){box-shadow:0 14px 36px rgba(30,144,255,0.06)}
-.service-card:nth-child(3){box-shadow:0 18px 44px rgba(30,144,255,0.08)}
-.service-card:nth-child(4){box-shadow:0 22px 60px rgba(30,144,255,0.10)}
+.service-card:nth-child(1){box-shadow:0 10px 26px rgba(30,144,255,0.04)}
+.service-card:nth-child(2){box-shadow:0 12px 32px rgba(30,144,255,0.06)}
+.service-card:nth-child(3){box-shadow:0 16px 40px rgba(30,144,255,0.08)}
+.service-card:nth-child(4){box-shadow:0 20px 52px rgba(30,144,255,0.10)}
 
 /* clients modal layout */
-.clients-grid { display:flex; gap:14px; align-items:stretch; padding-bottom:8px; overflow-x:auto; -webkit-overflow-scrolling: touch; }
+.clients-grid {
+display:flex;
+gap:14px;
+align-items:stretch;
+padding-bottom:8px;
+flex-wrap:wrap;      /* allow wrapping to remove slider */
+justify-content:center;
+max-width:100%;
+}
 .client-card {
-flex:1 0 200px;
-padding:18px;
+flex: 0 1 220px; /* shrinkable so it fits without scrollbar */
+padding:14px;    /* slightly smaller */
 border-radius:12px;
 background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
 border:1px solid rgba(255,255,255,0.03);
 position:relative;
 display:flex; flex-direction:column; justify-content:space-between;
 transition: transform .32s ease, box-shadow .32s ease, background .32s ease;
+min-height:180px;
 }
 .client-card .icon { position:absolute; top:12px; left:12px; width:36px; height:36px; border-radius:8px; background:linear-gradient(135deg,var(--accent),#8cc7ff); display:flex; align-items:center; justify-content:center; color:white; font-weight:800; box-shadow:0 10px 30px rgba(30,144,255,0.12); }
 .client-card h3{margin:28px 0 6px 0;font-size:16px}
@@ -187,28 +201,28 @@ align-items: center;     /* horizontal centering */
 
 /* --- Hover animations requested (logo/name, contact buttons, service/client cards) --- */
 .logo .mark-img:hover {
-  transform: scale(1.12) rotate(3deg);
-  box-shadow: 0 0 28px var(--accent), 0 0 56px rgba(30,144,255,0.28);
+transform: scale(1.12) rotate(3deg);
+box-shadow: 0 0 28px var(--accent), 0 0 56px rgba(30,144,255,0.28);
 }
 .brand h1:hover {
-  color: var(--accent);
-  text-shadow: 0 0 14px var(--accent), 0 0 28px rgba(30,144,255,0.45);
-  transform: scale(1.045);
+color: var(--accent);
+text-shadow: 0 0 14px var(--accent), 0 0 28px rgba(30,144,255,0.45);
+transform: scale(1.045);
 }
 
 /* contact buttons */
 .contact a:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 8px 30px rgba(30,144,255,0.18);
+transform: translateY(-6px) scale(1.03);
+box-shadow: 0 8px 30px rgba(30,144,255,0.18);
 }
 
 /* services and clients cards hover */
 .service-card:hover, .client-card:hover {
-  transform: translateY(-10px) scale(1.03);
-  box-shadow: 0 0 30px rgba(30,144,255,0.24), 0 20px 60px rgba(30,144,255,0.08);
-  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
-}
-</style>
+transform: translateY(-10px) scale(1.03);
+box-shadow: 0 0 30px rgba(30,144,255,0.24), 0 20px 60px rgba(30,144,255,0.08);
+background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+} </style>
+
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
@@ -306,6 +320,7 @@ align-items: center;     /* horizontal centering */
 </div>
 
 <!-- Services Modal (centered, in-frame, fade+slide) -->
+
 <div class="overlay" id="servicesOverlay" aria-hidden="true">
 <div class="modal" role="dialog" aria-modal="true" aria-labelledby="servicesTitle">
 <header>
@@ -348,6 +363,7 @@ align-items: center;     /* horizontal centering */
 </div>
 
 <!-- Clients Modal (3 glamorous cards w/ icon + footer) -->
+
 <div class="overlay" id="clientsOverlay" aria-hidden="true">
 <div class="modal" role="dialog" aria-modal="true" aria-labelledby="clientsTitle">
 <header>
@@ -511,5 +527,6 @@ if (e.key === 'Escape') {
 }
 });
 </script>
+
 </body>
 </html>
